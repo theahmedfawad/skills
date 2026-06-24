@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions "red-green-refactor", or wants integration tests.
+description: Test-driven development for embedded C/C++ (firmware, drivers, HALs, RTOS apps). Use when the user wants to build features or fix bugs test-first, mentions "red-green-refactor", wants unit/integration tests, needs to mock hardware dependencies, or wants test coverage for a module or driver. Supports Unity (default), CppUTest, and Google Test.
 ---
 
 # Test-Driven Development
@@ -14,6 +14,31 @@ description: Test-driven development. Use when the user wants to build features 
 **Bad tests** are coupled to implementation. They mock internal collaborators, test private methods, or verify through external means (like querying a database directly instead of using the interface). The warning sign: your test breaks when you refactor, but behavior hasn't changed. If you rename an internal function and tests fail, those tests were testing implementation, not behavior.
 
 See [tests.md](tests.md) for examples and [mocking.md](mocking.md) for mocking guidelines.
+
+## Embedded Mechanics
+
+The discipline above is language-agnostic; these are the embedded C/C++ specifics.
+
+**Framework selection** — default to **Unity**:
+
+| Framework | Language | Best For |
+|-----------|----------|----------|
+| Unity | C | Resource-constrained targets, pure C codebases |
+| CppUTest | C/C++ | Mixed C/C++, need CppUMock for mocking |
+| Google Test | C++ | C++ codebases, complex mocking needs |
+
+Setup, assertions, fixtures, and mocking per framework: [unity.md](unity.md),
+[cpputest.md](cpputest.md), [googletest.md](googletest.md).
+
+**Ensure testability first.** If the code under test pokes hardware directly (`PERIPHERAL->CTRL = ...`),
+it can't run on the host. Before writing tests, refactor the hardware boundary behind an injected
+interface (function-pointer struct, single injected function, or link-time substitution) so a mock
+can stand in. Full patterns — register mocks, peripheral fakes, controllable time, interrupt/callback
+simulation, weak symbols — are in [mocking.md](mocking.md).
+
+**Cover embedded edge cases.** Beyond the behavior under test, exercise boundary values, empty/full
+buffers, 32-bit timer rollover (~49.7 days), NULL pointers, invalid states/events, and error paths.
+See [edge-cases.md](edge-cases.md).
 
 ## Anti-Pattern: Horizontal Slices
 
@@ -51,6 +76,7 @@ Before writing any code:
 - [ ] Confirm with user what interface changes are needed
 - [ ] Confirm with user which behaviors to test (prioritize)
 - [ ] Identify opportunities for deep modules (small interface, deep implementation) — run the `/codebase-design` skill for the vocabulary and the testability checks
+- [ ] Ensure the hardware boundary is injectable — if the code accesses registers/peripherals directly, refactor for dependency injection first (see [mocking.md](mocking.md))
 - [ ] List the behaviors to test (not implementation steps)
 - [ ] Get user approval on the plan
 
