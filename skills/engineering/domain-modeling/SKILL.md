@@ -55,7 +55,7 @@ When domain relationships are being discussed, stress-test them with specific sc
 
 ### Cross-reference with code
 
-When the user states how something works, check whether the code agrees. If you find a contradiction, surface it: "Your code cancels entire Orders, but you just said partial cancellation is possible — which is right?"
+When the user states how something works, check whether the code agrees. If you find a contradiction, surface it: "Your code drives the GPS enable line active-high, but you just said it's active-low — which is right?"
 
 ### Update CONTEXT.md inline
 
