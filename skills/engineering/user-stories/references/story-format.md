@@ -8,7 +8,7 @@ Every user story file must follow this structure exactly:
 # User Story {ID}: {Title}
 
 ## Story
-As a **{role}**, I need **{capability}** so that **{benefit}**.
+As a **{role}**, I want **{capability}** so that **{benefit}**.
 
 ## Description
 {1-3 sentences expanding on the story. Explain what the module must do and why this capability matters. Provide enough context for a developer to understand the intent without reading the full system description.}
@@ -42,14 +42,14 @@ As a **{role}**, I need **{capability}** so that **{benefit}**.
 ## Writing Guidelines
 
 ### Story Statement
-- Always use: **As a [role], I need [capability] so that [benefit]**
+- Always use: **As a [role], I want [capability] so that [benefit]**
 - Bold the role, capability, and benefit for readability
 - The capability is what the system must do, not how
 - The benefit explains business or user value
 
-Good: As a **firmware developer**, I need **to detect when a sensor reading exceeds a threshold** so that **my application can trigger an alarm before damage occurs**.
+Good: As a **firmware developer**, I want **to detect when a sensor reading exceeds a threshold** so that **my application can trigger an alarm before damage occurs**.
 
-Bad: As a **user**, I need **the system to work** so that **it is useful**.
+Bad: As a **user**, I want **the system to work** so that **it is useful**.
 
 ### Acceptance Criteria
 - Write functional criteria from the user's perspective (what they observe)
@@ -77,6 +77,6 @@ Bad: As a **user**, I need **the system to work** so that **it is useful**.
 - **Too vague**: "The system should be fast" is not testable
 - **Implementation-driven**: Stories describe *what*, not *how*
 - **Missing benefit**: Every story must explain *why* it matters
-- **Compound stories**: "As a user, I need X and Y" should be two stories
+- **Compound stories**: "As a user, I want X and Y" should be two stories
 - **No scenarios**: Stories without test scenarios cannot be verified
 - **Duplicate coverage**: Two stories should not test the same behavior

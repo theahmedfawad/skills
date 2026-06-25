@@ -7,6 +7,8 @@ description: Generate a standalone, detailed user-story backlog from a system or
 
 Generate user stories from a system or module description following industry best practices.
 
+This skill produces a **standalone, detailed backlog** — one file per story, each with acceptance criteria, test scenarios, and priority. It is the heavyweight counterpart to `/to-prd`, which embeds a lightweight one-line-per-story list inside a PRD. Reach for this skill when the detailed backlog is the deliverable; reach for `/to-prd` when you just need a scope list inside a PRD.
+
 ## Workflow
 
 ### 1. Gather Input
@@ -16,7 +18,7 @@ Identify the system or module description. This may be:
 - A conversation with the user describing what they want to build
 - An existing codebase that needs stories written retroactively
 
-If the description is ambiguous or incomplete, run the `/grilling` skill to interview the user before proceeding. Focus the interview on:
+If the description is ambiguous or incomplete **and no prior grilling session or PRD exists in the conversation**, run the `/grilling` skill to interview the user before proceeding. (If scope was already settled upstream — e.g. a `/to-prd` PRD already exists in the conversation — skip the interview and synthesize from that context.) Focus the interview on:
 - Who are the users/roles interacting with this system?
 - What are the key capabilities the system must provide?
 - What are the constraints (hardware, timing, memory, safety)?
@@ -70,7 +72,7 @@ Dependencies influence priority: if Story B depends on Story A, Story A must be 
 Write each story using the format defined in [story-format.md](references/story-format.md).
 
 Key rules:
-- Use the canonical form: **As a [role], I need [capability] so that [benefit]**
+- Use the canonical form: **As a [role], I want [capability] so that [benefit]**
 - The capability must be concrete and specific, not vague
 - The benefit must explain *why* this matters to the role
 - Acceptance criteria must be testable (given-when-then where possible)
@@ -126,3 +128,5 @@ When the user wants to collaborate on story development:
 5. Review for gaps and refine
 
 Default to **thorough mode** unless the user requests quick generation or provides a very clear, complete description.
+
+**Do not re-interview.** If the conversation already contains a completed grilling session, a PRD (for example one produced by `/to-prd`), or a similarly detailed description, the scope is already settled — use **quick mode** and synthesize from that context. Reserve `/grilling` for a genuinely ambiguous fresh description with no prior elicitation.
