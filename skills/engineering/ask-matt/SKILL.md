@@ -15,7 +15,7 @@ A **flow** is a path through the skills. Most paths run along one **main flow**,
 The route most work travels. You have an idea and want it built.
 
 1. **`/grill-with-docs`** — sharpen the idea by interview. Start here when you **have a codebase**: it's stateful, retaining what it learns in `CONTEXT.md` and ADRs. (No codebase? Use `/grill-me` — see Standalone.)
-2. **Branch — can you settle every question in conversation?** If a question needs a runnable answer (state, business logic, a UI you have to see), detour through a prototype, bridged by **`/handoff`** in both directions (see Crossing sessions):
+2. **Branch — can you settle every question in conversation?** If a question needs a runnable answer (state, business logic, a device UI or behaviour you have to see), detour through a prototype, bridged by **`/handoff`** in both directions (see Crossing sessions):
    - **`/handoff`** out, then open a fresh session against that file,
    - **`/prototype`** to answer the question with throwaway code,
    - **`/handoff`** back what you learned, and reference it from the original idea thread.

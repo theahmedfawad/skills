@@ -18,8 +18,8 @@ Single-context repo (most repos):
 /
 ├── CONTEXT.md
 ├── docs/adr/
-│   ├── 0001-event-sourced-orders.md
-│   └── 0002-postgres-for-write-model.md
+│   ├── 0001-superloop-architecture.md
+│   └── 0002-static-allocation-only.md
 └── src/
 ```
 
@@ -30,10 +30,10 @@ Multi-context repo (presence of `CONTEXT-MAP.md` at the root):
 ├── CONTEXT-MAP.md
 ├── docs/adr/                          ← system-wide decisions
 └── src/
-    ├── ordering/
+    ├── motor-control/
     │   ├── CONTEXT.md
     │   └── docs/adr/                  ← context-specific decisions
-    └── billing/
+    └── telemetry/
         ├── CONTEXT.md
         └── docs/adr/
 ```
@@ -48,4 +48,4 @@ If the concept you need isn't in the glossary yet, that's a signal — either yo
 
 If your output contradicts an existing ADR, surface it explicitly rather than silently overriding:
 
-> _Contradicts ADR-0007 (event-sourced orders) — but worth reopening because…_
+> _Contradicts ADR-0002 (static allocation only) — but worth reopening because…_

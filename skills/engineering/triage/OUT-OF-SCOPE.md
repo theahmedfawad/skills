@@ -10,8 +10,9 @@ The `.out-of-scope/` directory in a repo stores persistent records of rejected f
 ```
 .out-of-scope/
 ├── dark-mode.md
-├── plugin-system.md
-└── graphql-api.md
+├── json-format.md
+├── eeprom-blocking-apis.md
+└── wifi-connectivity.md
 ```
 
 One file per **concept**, not per issue. Multiple issues requesting the same thing are grouped under one file.
@@ -23,27 +24,26 @@ The file should be written in a relaxed, readable style — more like a short de
 ```markdown
 # Dark Mode
 
-This project does not support dark mode or user-facing theming.
+This firmware does not support a dark/light theme for the on-device display.
 
 ## Why this is out of scope
 
-The rendering pipeline assumes a single color palette defined in
-`ThemeConfig`. Supporting multiple themes would require:
+The display driver assumes a single colour palette baked in at build time
+(`g_palette`). Supporting themes would require:
 
-- A theme context provider wrapping the entire component tree
-- Per-component theme-aware style resolution
-- A persistence layer for user theme preferences
+- A runtime palette swap reaching every screen-draw call site
+- Per-widget theme-aware colour resolution
+- A non-volatile setting to persist the user's choice
 
-This is a significant architectural change that doesn't align with the
-project's focus on content authoring. Theming is a concern for downstream
-consumers who embed or redistribute the output.
+This is a significant change that doesn't fit a fixed-function device with a
+small framebuffer. Theming is left to products that build on this module.
 
-```ts
-// The current ThemeConfig interface is not designed for runtime switching:
-interface ThemeConfig {
-  colors: ColorPalette; // single palette, resolved at build time
-  fonts: FontStack;
-}
+```c
+// The palette is fixed at build time, not swappable at runtime:
+typedef struct {
+    const rgb565_t *colors;  // single palette, resolved at build time
+    const font_t   *font;
+} display_config_t;
 ```
 
 ## Prior requests
@@ -55,7 +55,7 @@ interface ThemeConfig {
 
 ### Naming the file
 
-Use a short, descriptive kebab-case name for the concept: `dark-mode.md`, `plugin-system.md`, `graphql-api.md`. The name should be recognizable enough that someone browsing the directory understands what was rejected without opening the file.
+Use a short, descriptive kebab-case name for the concept: `dark-mode.md`, `wifi-connectivity.md`, `eeprom-blocking-apis.md`. The name should be recognizable enough that someone browsing the directory understands what was rejected without opening the file.
 
 ### Writing the reason
 
