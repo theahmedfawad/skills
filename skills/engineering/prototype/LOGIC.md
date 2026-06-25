@@ -9,7 +9,7 @@ A tiny interactive terminal app that lets the user drive a state model by hand. 
 - "I want to feel out what the API should look like before writing it."
 - Anything where the user wants to **press buttons and watch state change**.
 
-If the question is "what should this look like" — wrong branch. Use [UI.md](UI.md).
+If the question is about what the device presents or how the user interacts — wrong branch. Use [UI.md](UI.md).
 
 ## Process
 
@@ -19,9 +19,9 @@ Before writing code, write down what state model and what question you're protot
 
 ### 2. Pick the language
 
-Use whatever the host project uses. If the project has no obvious runtime (e.g. a docs repo), ask.
+Use whatever the host project uses. For firmware, build the logic for the **host** (compile it for your dev machine, not the target) so the prototype runs as an ordinary terminal program — no flashing, no debugger, instant iteration. Include external dependcies if needed.
 
-Match the project's existing conventions for tooling — don't add a new package manager or runtime just for the prototype.
+Match the project's existing conventions for tooling — don't add a new build system or toolchain just for the prototype.
 
 ### 3. Isolate the logic in a portable module
 
@@ -29,28 +29,27 @@ Put the actual logic — the bit that's answering the question — behind a smal
 
 The right shape depends on the question:
 
-- **A pure reducer** — `(state, action) => state`. Good when actions are discrete events and state is a single value.
 - **A state machine** — explicit states and transitions. Good when "which actions are even legal right now" is part of the question.
 - **A small set of pure functions** over a plain data type. Good when there's no implicit current state — just transformations.
-- **A class or module with a clear method surface** when the logic genuinely owns ongoing internal state.
+- **A module with a clear method surface** when the logic genuinely owns ongoing internal state.
 
-Pick whichever shape best fits the question being asked, *not* whichever is easiest to wire to a TUI. Keep it pure: no I/O, no terminal code, no `console.log` for control flow. The TUI imports it and calls into it; nothing flows the other direction.
+Pick whichever shape best fits the question being asked, *not* whichever is easiest to wire to a TUI. Keep it pure: no I/O, no register access, no terminal code, no `printf` for control flow. The TUI calls into it; nothing flows the other direction. This is exactly the host-testable shape the `/tdd` skill wants — the logic compiles for the host with no hardware behind it.
 
-This is what makes the prototype useful past its own lifetime. When the question's been answered, the validated reducer / machine / function set can be lifted into the real module — the TUI shell gets deleted.
+This is what makes the prototype useful past its own lifetime. When the question's been answered, the validated state machine / function set can be lifted straight into the real firmware module — the TUI shell gets deleted.
 
 ### 4. Build the smallest TUI that exposes the state
 
-Build it as a **lightweight TUI** — on every tick, clear the screen (`console.clear()` / `print("\033[2J\033[H")` / equivalent) and re-render the whole frame. The user should always see one stable view, not an ever-growing scrollback.
+Build it as a **lightweight TUI** — on every tick, clear the screen (`print("\033[2J\033[H")` / equivalent) and re-render the whole frame. The user should always see one stable view, not an ever-growing scrollback.
 
 Each frame has two parts, in this order:
 
-1. **Current state**, pretty-printed and diff-friendly (one field per line, or formatted JSON). Use **bold** for field names or section headers and **dim** for less important context (timestamps, IDs, derived values). Native ANSI escape codes are fine — `\x1b[1m` bold, `\x1b[2m` dim, `\x1b[0m` reset. No need to pull in a styling library unless one is already in the project.
-2. **Keyboard shortcuts**, listed at the bottom: `[a] add user  [d] delete user  [t] tick clock  [q] quit`. Bold the key, dim the description, or vice-versa — whatever reads cleanly.
+1. **Current state**, pretty-printed and diff-friendly — one struct field per line. Use **bold** for field names or section headers and **dim** for less important context (tick counts, handles, derived values). Native ANSI escape codes are fine — `\x1b[1m` bold, `\x1b[2m` dim, `\x1b[0m` reset. No need to pull in a styling library.
+2. **Keyboard shortcuts**, listed at the bottom: `[u] value up  [d] value down  [t] tick clock  [i] inject IRQ  [q] quit`. Bold the key, dim the description, or vice-versa — whatever reads cleanly.
 
 Behaviour:
 
-1. **Initialise state** — a single in-memory object/struct. Render the first frame on start.
-2. **Read one keystroke (or one line)** at a time, dispatch to a handler that mutates state.
+1. **Initialise state** — a single in-memory struct. Render the first frame on start.
+2. **Read one keystroke (or one line)** at a time, dispatch to a handler that drives the state machine. Map keys to the events the firmware will really see — a timer tick, an IRQ, a received frame, a button edge.
 3. **Re-render** the full frame after every action — don't append, replace.
 4. **Loop until quit.**
 
@@ -58,7 +57,7 @@ The whole frame should fit on one screen.
 
 ### 5. Make it runnable in one command
 
-Add a script to the project's existing task runner (`package.json` scripts, `Makefile`, `justfile`, `pyproject.toml`). The user should run `pnpm run <prototype-name>` or equivalent — never need to remember a path.
+Add a target to the project's existing build system (`Makefile`, `CMakeLists.txt`, `justfile`). The user should run `make <prototype-name>` (or `cmake --build … && ./<host-sim>`) — never need to remember a path.
 
 If the host project has no task runner, just put the command at the top of the prototype's README.
 
@@ -73,7 +72,7 @@ When the prototype has done its job, the answer to the question is the only thin
 ## Anti-patterns
 
 - **Don't add tests.** A prototype that needs tests is no longer a prototype.
-- **Don't wire it to the real database.** Use an in-memory store unless the question is specifically about persistence.
+- **Don't wire it to real hardware.** Drive peripherals, registers, and timers through in-memory stubs unless the question is specifically about a device's behaviour.
 - **Don't generalise.** No "what if we wanted to support X later." The prototype answers one question.
-- **Don't blur the logic and the TUI together.** If the reducer / state machine references `console.log`, prompts, or terminal escape codes, it's no longer portable. Keep the TUI as a thin shell over a pure module.
+- **Don't blur the logic and the TUI together.** If the state machine references `printf`, blocking input, or terminal escape codes, it's no longer portable — and no longer host-testable. Keep the TUI as a thin shell over a pure module.
 - **Don't ship the TUI shell into production.** The shell is optimised for being driven by hand from a terminal. The logic module behind it is the bit worth keeping.
