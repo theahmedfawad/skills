@@ -5,12 +5,12 @@ description: Create exercise directory structures with sections, problems, solut
 
 # Scaffold Exercises
 
-Create exercise directory structures that pass `pnpm ai-hero-cli internal lint`, then commit with `git commit`.
+Create exercise directory structures that pass the course repo's exercise-structure linter, then commit with `git commit`.
 
 ## Directory naming
 
-- **Sections**: `XX-section-name/` inside `exercises/` (e.g., `01-retrieval-skill-building`)
-- **Exercises**: `XX.YY-exercise-name/` inside a section (e.g., `01.03-retrieval-with-bm25`)
+- **Sections**: `XX-section-name/` inside `exercises/` (e.g., `01-peripheral-drivers`)
+- **Exercises**: `XX.YY-exercise-name/` inside a section (e.g., `01.03-uart-with-dma`)
 - Section number = `XX`, exercise number = `XX.YY`
 - Names are dash-case (lowercase, hyphens)
 
@@ -39,19 +39,19 @@ When stubbing, create a minimal readme with a title and a description:
 Description here
 ```
 
-If the subfolder has code, it also needs a `main.ts` (>1 line). But for stubs, a readme-only exercise is fine.
+If the subfolder has code, it also needs a `main.c` (>1 line). But for stubs, a readme-only exercise is fine.
 
 ## Workflow
 
 1. **Parse the plan** - extract section names, exercise names, and variant types
 2. **Create directories** - `mkdir -p` for each path
 3. **Create stub readmes** - one `readme.md` per variant folder with a title
-4. **Run lint** - `pnpm ai-hero-cli internal lint` to validate
+4. **Run lint** - the course repo's exercise-structure linter to validate
 5. **Fix any errors** - iterate until lint passes
 
 ## Lint rules summary
 
-The linter (`pnpm ai-hero-cli internal lint`) checks:
+The exercise-structure linter typically checks (adapt to your repo's linter):
 
 - Each exercise has subfolders (`problem/`, `solution/`, `explainer/`)
 - At least one of `problem/`, `explainer/`, or `explainer.1/` exists
@@ -59,8 +59,8 @@ The linter (`pnpm ai-hero-cli internal lint`) checks:
 - No `.gitkeep` files
 - No `speaker-notes.md` files
 - No broken links in readmes
-- No `pnpm run exercise` commands in readmes
-- `main.ts` required per subfolder unless it's readme-only
+- No project-specific run commands hardcoded in readmes
+- `main.c` required per subfolder unless it's readme-only
 
 ## Moving/renaming exercises
 
@@ -73,7 +73,7 @@ When renumbering or moving exercises:
 Example:
 
 ```bash
-git mv exercises/01-retrieval/01.03-embeddings exercises/01-retrieval/01.04-embeddings
+git mv exercises/01-peripheral-drivers/01.03-uart-with-dma exercises/01-peripheral-drivers/01.04-uart-with-dma
 ```
 
 ## Example: stubbing from a plan
@@ -81,26 +81,26 @@ git mv exercises/01-retrieval/01.03-embeddings exercises/01-retrieval/01.04-embe
 Given a plan like:
 
 ```
-Section 05: Memory Skill Building
-- 05.01 Introduction to Memory
-- 05.02 Short-term Memory (explainer + problem + solution)
-- 05.03 Long-term Memory
+Section 05: Interrupt Handling
+- 05.01 Introduction to Interrupts
+- 05.02 GPIO Interrupts (explainer + problem + solution)
+- 05.03 Nested Interrupts
 ```
 
 Create:
 
 ```bash
-mkdir -p exercises/05-memory-skill-building/05.01-introduction-to-memory/explainer
-mkdir -p exercises/05-memory-skill-building/05.02-short-term-memory/{explainer,problem,solution}
-mkdir -p exercises/05-memory-skill-building/05.03-long-term-memory/explainer
+mkdir -p exercises/05-interrupt-handling/05.01-introduction-to-interrupts/explainer
+mkdir -p exercises/05-interrupt-handling/05.02-gpio-interrupts/{explainer,problem,solution}
+mkdir -p exercises/05-interrupt-handling/05.03-nested-interrupts/explainer
 ```
 
 Then create readme stubs:
 
 ```
-exercises/05-memory-skill-building/05.01-introduction-to-memory/explainer/readme.md -> "# Introduction to Memory"
-exercises/05-memory-skill-building/05.02-short-term-memory/explainer/readme.md -> "# Short-term Memory"
-exercises/05-memory-skill-building/05.02-short-term-memory/problem/readme.md -> "# Short-term Memory"
-exercises/05-memory-skill-building/05.02-short-term-memory/solution/readme.md -> "# Short-term Memory"
-exercises/05-memory-skill-building/05.03-long-term-memory/explainer/readme.md -> "# Long-term Memory"
+exercises/05-interrupt-handling/05.01-introduction-to-interrupts/explainer/readme.md -> "# Introduction to Interrupts"
+exercises/05-interrupt-handling/05.02-gpio-interrupts/explainer/readme.md -> "# GPIO Interrupts"
+exercises/05-interrupt-handling/05.02-gpio-interrupts/problem/readme.md -> "# GPIO Interrupts"
+exercises/05-interrupt-handling/05.02-gpio-interrupts/solution/readme.md -> "# GPIO Interrupts"
+exercises/05-interrupt-handling/05.03-nested-interrupts/explainer/readme.md -> "# Nested Interrupts"
 ```
