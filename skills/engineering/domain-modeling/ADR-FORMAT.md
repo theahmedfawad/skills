@@ -38,10 +38,9 @@ If a decision is easy to reverse, skip it — you'll just reverse it. If it's no
 
 ### What qualifies
 
-- **Architectural shape.** "We're using a monorepo." "The write model is event-sourced, the read model is projected into Postgres."
-- **Integration patterns between contexts.** "Ordering and Billing communicate via domain events, not synchronous HTTP."
-- **Technology choices that carry lock-in.** Database, message bus, auth provider, deployment target. Not every library — just the ones that would take a quarter to swap out.
-- **Boundary and scope decisions.** "Customer data is owned by the Customer context; other contexts reference it by ID only." The explicit no-s are as valuable as the yes-s.
-- **Deliberate deviations from the obvious path.** "We're using manual SQL instead of an ORM because X." Anything where a reasonable reader would assume the opposite. These stop the next engineer from "fixing" something that was deliberate.
-- **Constraints not visible in the code.** "We can't use AWS because of compliance requirements." "Response times must be under 200ms because of the partner API contract."
-- **Rejected alternatives when the rejection is non-obvious.** If you considered GraphQL and picked REST for subtle reasons, record it — otherwise someone will suggest GraphQL again in six months.
+- **Architectural shape.** "This is RTOS based project." "ISRs, software timers and callbacks do minimal required action, set flag, push event to Queue or send signal to task; all processing happens in task or main loop."
+- **Integration patterns between modules.** "HAL interface is a contract between driver and servic." "dependency app -> service -> HAL -> Driver." **Technology choices that carry lock-in.** MCU family/vendor, RTOS, toolchain, bootloader, bus protocol, build system. Not every library — just the ones that would take a quarter to swap out. "We're on Zephyr, not FreeRTOS." "Register-level access, not the vendor HAL."
+- **Boundary and scope decisions.** "The HAL owns all peripheral access; nothing else includes the vendor headers." "Flash is partitioned bootloader / app / config; the app never writes outside its slot." The explicit no-s are as valuable as the yes-s.
+- **Deliberate deviations from the obvious path.** "Static allocation only — no `malloc` after init." "We poll the ADC instead of using DMA because X." Anything where a reasonable reader would assume the opposite. These stop the next engineer from "fixing" something that was deliberate.
+- **Constraints not visible in the code.** "Must fit in 64 KB flash / 8 KB RAM." "ISR latency must stay under 10 µs." "No floating point — the Cortex-M0 has no FPU." "ISO 26262 forbids dynamic allocation in the safety path."
+- **Rejected alternatives when the rejection is non-obvious.** If you considered DMA-driven SPI and picked interrupt-driven for subtle buffer-coherency reasons, record it — otherwise someone will suggest DMA again in six months.

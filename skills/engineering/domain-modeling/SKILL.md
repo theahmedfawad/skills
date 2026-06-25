@@ -16,8 +16,8 @@ Most repos have a single context:
 ├── CONTEXT.md
 ├── docs/
 │   └── adr/
-│       ├── 0001-event-sourced-orders.md
-│       └── 0002-postgres-for-write-model.md
+│       ├── 0001-superloop-architecture.md
+│       └── 0002-static-allocation-only.md
 └── src/
 ```
 
@@ -29,10 +29,10 @@ If a `CONTEXT-MAP.md` exists at the root, the repo has multiple contexts. The ma
 ├── docs/
 │   └── adr/                          ← system-wide decisions
 ├── src/
-│   ├── ordering/
+│   ├── motor-control/
 │   │   ├── CONTEXT.md
 │   │   └── docs/adr/                 ← context-specific decisions
-│   └── billing/
+│   └── telemetry/
 │       ├── CONTEXT.md
 │       └── docs/adr/
 ```
@@ -47,7 +47,7 @@ When the user uses a term that conflicts with the existing language in `CONTEXT.
 
 ### Sharpen fuzzy language
 
-When the user uses vague or overloaded terms, propose a precise canonical term. "You're saying 'account' — do you mean the Customer or the User? Those are different things."
+When the user uses vague or overloaded terms, propose a precise canonical term. "You're saying 'buffer' — do you mean the RX ring buffer or the DMA scratch buffer? Those are different things."
 
 ### Discuss concrete scenarios
 
