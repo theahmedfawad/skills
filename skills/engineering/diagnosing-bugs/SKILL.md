@@ -103,6 +103,8 @@ Tool preference:
 
 **Tag every debug log** with a unique prefix, e.g. `[DEBUG-a4f2]`. Cleanup at the end becomes a single grep. Untagged logs survive; tagged logs die.
 
+When a hypothesis or probe turns on an externally-defined fact — a register's expected value, a peripheral's documented behaviour, a protocol field, a known erratum — confirm it via `/reference-lookup` before trusting it. "The datasheet (or spec) says X" is a hypothesis until you've actually read it.
+
 **Perf branch.** For performance regressions, logs are usually wrong. Instead: establish a baseline measurement (timing harness, DWT cycle counter / hardware timer, profiler, trace timeline), then bisect. Measure first, fix second.
 
 ## Phase 5 — Fix + regression test

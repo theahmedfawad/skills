@@ -73,12 +73,19 @@ Confirm the layout:
 - **Single-context** — one `CONTEXT.md` + `docs/adr/` at the repo root. Most repos are this.
 - **Multi-context** — `CONTEXT-MAP.md` at the root pointing to per-context `CONTEXT.md` files (typically a monorepo).
 
+**Section D — External references.**
+
+> Explainer: `/reference-lookup` (and the skills that cite external facts — `tdd`, `diagnosing-bugs`, `codebase-design`, `domain-modeling`, `prototype`) read a manifest of the project's authoritative sources of truth — datasheets, reference manuals, errata, schematics, register-map/SVD, communication-protocol specs (CAN/USB/BLE/Modbus), standards (MISRA C, ISO 26262, IEC 61508, DO-178C), RFCs, and vendor SDK/API docs — so the agent cites real values instead of inventing them.
+
+Ask which reference documents the project depends on (with identifiers/versions) and where they live — local paths under the repo, official URLs, or both. Skip this section if the project has no external references worth pinning.
+
 ### 3. Confirm and edit
 
 Show the user a draft of:
 
 - The `## Agent skills` block to add to whichever of `CLAUDE.md` / `AGENTS.md` is being edited (see step 4 for selection rules)
 - The contents of `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, `docs/agents/domain.md`
+- If the project pins external references, `docs/references/REFERENCES.md` (manifest format in the `reference-lookup` skill)
 
 Let them edit before writing.
 
@@ -110,6 +117,10 @@ The block:
 ### Domain docs
 
 [one-line summary of layout — "single-context" or "multi-context"]. See `docs/agents/domain.md`.
+
+### External references
+
+[one-line summary — which authoritative docs are pinned (datasheets, protocol specs, standards, SDK) and where they live; omit if none]. See `docs/references/REFERENCES.md`.
 ```
 
 Then write the three docs files using the seed templates in this skill folder as a starting point:
@@ -121,6 +132,8 @@ Then write the three docs files using the seed templates in this skill folder as
 - [domain.md](./domain.md) — domain doc consumer rules + layout
 
 For "other" issue trackers, write `docs/agents/issue-tracker.md` from scratch using the user's description.
+
+If the project pins external references, also write `docs/references/REFERENCES.md` from the documents and locations gathered in Section D, using the manifest table format documented in the `reference-lookup` skill. Skip if there are none.
 
 ### 5. Done
 

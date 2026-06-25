@@ -94,6 +94,8 @@ Good interfaces make testing natural:
 
 3. **Small surface area.** Fewer methods = fewer tests needed. Fewer params = simpler test setup.
 
+When a HAL adapter or driver encodes register addresses, bitfields, peripheral sequences, or protocol fields, source those facts via `/reference-lookup` and cite them — the seam isolates the hardware, but the values behind it still have to be correct per the datasheet or spec.
+
 ## Relationships
 
 - A **Module** has exactly one **Interface** (the surface it presents to callers and tests).

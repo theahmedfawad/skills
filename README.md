@@ -165,6 +165,7 @@ Skills I use daily for code work.
 - **[domain-modeling](./skills/engineering/domain-modeling/SKILL.md)** — Actively build and sharpen a project's domain model — challenge terms against the glossary, stress-test with edge-case scenarios, and update `CONTEXT.md` and ADRs inline.
 - **[codebase-design](./skills/engineering/codebase-design/SKILL.md)** — Shared discipline and vocabulary for designing deep modules: a lot of behaviour behind a small interface, placed at a clean seam, testable through that interface.
 - **[user-stories](./skills/engineering/user-stories/SKILL.md)** — Generate a standalone, detailed user-story backlog (acceptance criteria, test scenarios, priority) from a system or module description. Distinct from `to-prd`'s inline one-liner story list and `to-issues`' vertical-slice issue breakdown.
+- **[reference-lookup](./skills/engineering/reference-lookup/SKILL.md)** — Look up and cite authoritative external references the code must conform to — datasheets, errata, protocol specs (CAN/USB/BLE/Modbus), standards (MISRA C, ISO 26262, IEC 61508, DO-178C), RFCs, vendor SDK/API docs. Local-first, web-fallback, always cite; never invent a value.
 
 ### Productivity
 

@@ -40,6 +40,10 @@ simulation, weak symbols — are in [mocking.md](mocking.md).
 buffers, 32-bit timer rollover (~49.7 days), NULL pointers, invalid states/events, and error paths.
 See [edge-cases.md](edge-cases.md).
 
+**Use real referenced facts.** When a test or mock encodes a real register address, bitfield, reset
+value, electrical/timing constant, or protocol field, source it via `/reference-lookup` and cite it
+— don't hand-write it from memory, or the test will faithfully verify the wrong value.
+
 ## Anti-Pattern: Horizontal Slices
 
 **DO NOT write all tests first, then all implementation.** This is "horizontal slicing" - treating RED as "write all tests" and GREEN as "write all code."
