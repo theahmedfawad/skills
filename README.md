@@ -107,7 +107,7 @@ It's hard to explain how powerful this is. It might be the single coolest techni
 
 It's time to look at your feedback loops. Without feedback on how the code it produces actually runs, the agent will be flying blind.
 
-**The Fix**: You need the usual tranche of feedback loops: static types, browser access, and automated tests.
+**The Fix**: You need the usual tranche of feedback loops: compiler warnings-as-errors, on-target or host-simulator access, and automated tests.
 
 For automated tests, a red-green-refactor loop is critical. This is where the agent writes a failing test first, then fixes the test. This helps give the agent a consistent level of feedback that results in far better code.
 
@@ -125,7 +125,7 @@ For debugging, I've also built a **[`/diagnosing-bugs`](./skills/engineering/dia
 >
 > John Ousterhout, [A Philosophy Of Software Design](https://www.amazon.co.uk/Philosophy-Software-Design-2nd/dp/173210221X)
 
-**The Problem**: Most apps built with agents are complex and hard to change. Because agents can radically speed up coding, they also accelerate software entropy. Codebases get more complex at an unprecedented rate.
+**The Problem**: Most firmware built with agents is complex and hard to change. Because agents can radically speed up coding, they also accelerate software entropy. Codebases get more complex at an unprecedented rate.
 
 **The Fix** for this is a radical new approach to AI-powered development: caring about the design of the code.
 
@@ -137,7 +137,7 @@ And crucially, [`/improve-codebase-architecture`](./skills/engineering/improve-c
 
 ### Summary
 
-Software engineering fundamentals matter more than ever. These skills are my best effort at condensing these fundamentals into repeatable practices, to help you ship the best apps of your career. Enjoy.
+Software engineering fundamentals matter more than ever. These skills are my best effort at condensing these fundamentals into repeatable practices, to help you ship the best firmware of your career. Enjoy.
 
 ## Reference
 
