@@ -15,7 +15,7 @@ Use these terms exactly — don't substitute "component," "service," "API," or "
 
 **Interface** — everything a caller must know to use the module correctly: the type signature, but also invariants, ordering constraints, error modes, required configuration, and performance characteristics. _Avoid_: API, signature (too narrow — they refer only to the type-level surface).
 
-**Implementation** — what's inside a module, its body of code. Distinct from **Adapter**: a thing can be a small adapter with a large implementation (a Postgres repo) or a large adapter with a small implementation (an in-memory fake). Reach for "adapter" when the seam is the topic; "implementation" otherwise.
+**Implementation** — what's inside a module, its body of code. Distinct from **Adapter**: a thing can be a small adapter with a large implementation (a register-level sensor driver) or a large adapter with a small implementation (an in-RAM fake peripheral). Reach for "adapter" when the seam is the topic; "implementation" otherwise.
 
 **Depth** — leverage at the interface: the amount of behaviour a caller (or test) can exercise per unit of interface they have to learn. A module is **deep** when a large amount of behaviour sits behind a small interface, **shallow** when the interface is nearly as complex as the implementation.
 
@@ -70,25 +70,25 @@ Good interfaces make testing natural:
 
 1. **Accept dependencies, don't create them.**
 
-   ```typescript
+   ```c
    // Testable
-   function processOrder(order, paymentGateway) {}
+   void process_reading(reading_t reading, const sensor_hal_t *hal) {}
 
    // Hard to test
-   function processOrder(order) {
-     const gateway = new StripeGateway();
+   void process_reading(reading_t reading) {
+     const sensor_hal_t *hal = &g_production_hal;  // hard-wired global
    }
    ```
 
 2. **Return results, don't produce side effects.**
 
-   ```typescript
+   ```c
    // Testable
-   function calculateDiscount(cart): Discount {}
+   int16_t convert_temperature(uint16_t raw_adc);
 
    // Hard to test
-   function applyDiscount(cart): void {
-     cart.total -= discount;
+   void update_temperature(sensor_t *s) {
+     s->temperature_c -= s->calibration_offset;  // mutates in place
    }
    ```
 
@@ -105,7 +105,7 @@ Good interfaces make testing natural:
 ## Rejected framings
 
 - **Depth as ratio of implementation-lines to interface-lines** (Ousterhout): rewards padding the implementation. We use depth-as-leverage instead.
-- **"Interface" as the TypeScript `interface` keyword or a class's public methods**: too narrow — interface here includes every fact a caller must know.
+- **"Interface" as a C `struct` of function pointers, or just a header's exported prototypes**: too narrow — interface here includes every fact a caller must know.
 - **"Boundary"**: overloaded with DDD's bounded context. Say **seam** or **interface**.
 
 ## Going deeper

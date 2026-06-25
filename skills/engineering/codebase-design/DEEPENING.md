@@ -12,17 +12,17 @@ Pure computation, in-memory state, no I/O. Always deepenable — merge the modul
 
 ### 2. Local-substitutable
 
-Dependencies that have local test stand-ins (PGLite for Postgres, in-memory filesystem). Deepenable if the stand-in exists. The deepened module is tested with the stand-in running in the test suite. The seam is internal; no port at the module's external interface.
+Dependencies that have local test stand-ins (an in-RAM flash/EEPROM model, a host build of the RTOS scheduler, a fake peripheral). Deepenable if the stand-in exists. The deepened module is tested with the stand-in running in the test suite. The seam is internal; no port at the module's external interface.
 
 ### 3. Remote but owned (Ports & Adapters)
 
-Your own services across a network boundary (microservices, internal APIs). Define a **port** (interface) at the seam. The deep module owns the logic; the transport is injected as an **adapter**. Tests use an in-memory adapter. Production uses an HTTP/gRPC/queue adapter.
+Your own firmware across a bus or on a companion processor (a sensor coprocessor, a separate RTOS task behind a queue). Define a **port** (interface) at the seam. The deep module owns the logic; the transport is injected as an **adapter**. Tests use an in-memory adapter. Production uses a UART/SPI/I2C/CAN/queue adapter.
 
-Recommendation shape: *"Define a port at the seam, implement an HTTP adapter for production and an in-memory adapter for testing, so the logic sits in one deep module even though it's deployed across a network."*
+Recommendation shape: *"Define a port at the seam, implement a bus (e.g. SPI) adapter for production and an in-memory adapter for testing, so the logic sits in one deep module even though it talks to hardware across a bus."*
 
 ### 4. True external (Mock)
 
-Third-party services (Stripe, Twilio, etc.) you don't control. The deepened module takes the external dependency as an injected port; tests provide a mock adapter.
+Third-party chips or modules (a sensor IC, a cellular modem, a GNSS receiver) you don't control. The deepened module takes the external dependency as an injected port; tests provide a mock adapter.
 
 ## Seam discipline
 
