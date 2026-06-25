@@ -139,12 +139,12 @@ void mock_hal_reset(void) {
 
 ### Using in Tests
 ```c
-void setUp(void) {
+void setup(void) {
     mock_hal_reset();
     module_init(&test_module, &hal_mock);
 }
 
-void test_Module_ReadsStatusRegister(void) {
+void test_module_readsstatusregister(void) {
     mock_hal_set_register(STATUS_REG, 0x42);
 
     uint32_t status = module_get_status(&test_module);
@@ -364,7 +364,7 @@ uint32_t get_system_time_ms(void) {
 
 ### Testing Timeouts and Delays
 ```c
-void test_Watchdog_ExpiresAfterTimeout(void) {
+void test_watchdog_expiresaftertimeout(void) {
     time_mock_set(0);
     watchdog_init(1000);  // 1 second timeout
     watchdog_start();
@@ -376,7 +376,7 @@ void test_Watchdog_ExpiresAfterTimeout(void) {
     TEST_ASSERT_TRUE(watchdog_expired());
 }
 
-void test_Debounce_RequiresStableInput(void) {
+void test_debounce_requiresstableinput(void) {
     time_mock_set(0);
     debounce_t db;
     debounce_init(&db, 50);  // 50ms debounce
@@ -419,7 +419,7 @@ bool interrupt_mock_is_pending(irq_t irq) {
 }
 
 // Test
-void test_UART_RxInterrupt_BuffersData(void) {
+void test_uart_rxinterrupt_buffersdata(void) {
     uart_mock_set_rx_byte(0x42);
     interrupt_mock_trigger(UART_RX_IRQ);
 
@@ -446,7 +446,7 @@ void setUp(void) {
     callback_context = NULL;
 }
 
-void test_Timer_InvokesCallbackOnExpiry(void) {
+void test_timer_invokescallbackonexpiry(void) {
     int user_data = 42;
     timer_set_callback(mock_callback, &user_data);
     timer_start(100);
