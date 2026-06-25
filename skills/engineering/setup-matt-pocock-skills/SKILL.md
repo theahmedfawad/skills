@@ -78,7 +78,9 @@ Confirm the layout:
 
 > Explainer: `/reference-lookup` (and the skills that cite external facts — `tdd`, `diagnosing-bugs`, `codebase-design`, `domain-modeling`, `prototype`) read a manifest of the project's authoritative sources of truth — datasheets, reference manuals, errata, schematics, register-map/SVD, communication-protocol specs (CAN/USB/BLE/Modbus), standards (MISRA C, ISO 26262, IEC 61508, DO-178C), RFCs, and vendor SDK/API docs — so the agent cites real values instead of inventing them.
 
-Ask which reference documents the project depends on (with identifiers/versions) and where they live — local paths under the repo, official URLs, or both. Skip this section if the project has no external references worth pinning.
+Ask which reference documents the project depends on (with identifiers/versions) and where they live — local paths under the repo, official URLs, or both. For each, ask which sections/page ranges the project actually touches, so the manifest can carry a **section index** that lets lookups read a bounded region instead of a 1,000-page PDF. Skip this section if the project has no external references worth pinning.
+
+Alongside the manifest, `/reference-lookup` keeps a **resolved-facts ledger** (`docs/references/facts.md`) — a cited cache of facts already looked up, so the same datasheet region isn't re-read every time. This setup seeds it empty; the skill fills it as it resolves facts.
 
 ### 3. Confirm and edit
 
@@ -86,7 +88,7 @@ Show the user a draft of:
 
 - The `## Agent skills` block to add to whichever of `CLAUDE.md` / `AGENTS.md` is being edited (see step 4 for selection rules)
 - The contents of `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, `docs/agents/domain.md`
-- If the project pins external references, `docs/references/REFERENCES.md` (manifest format in the `reference-lookup` skill)
+- If the project pins external references, `docs/references/REFERENCES.md` (manifest format — including the per-doc section index — in the `reference-lookup` skill), plus an empty `docs/references/facts.md` ledger (seeded with just its table header)
 
 Let them edit before writing.
 
@@ -121,7 +123,7 @@ The block:
 
 ### External references
 
-[one-line summary — which authoritative docs are pinned (datasheets, protocol specs, standards, SDK) and where they live; omit if none]. See `docs/references/REFERENCES.md`.
+[one-line summary — which authoritative docs are pinned (datasheets, protocol specs, standards, SDK) and where they live; omit if none]. See `docs/references/REFERENCES.md`; resolved facts are cached in `docs/references/facts.md`.
 ```
 
 Then write the three docs files using the seed templates in this skill folder as a starting point:
@@ -135,7 +137,7 @@ Then write the three docs files using the seed templates in this skill folder as
 
 For "other" issue trackers, write `docs/agents/issue-tracker.md` from scratch using the user's description.
 
-If the project pins external references, also write `docs/references/REFERENCES.md` from the documents and locations gathered in Section D, using the manifest table format documented in the `reference-lookup` skill. Skip if there are none.
+If the project pins external references, also write `docs/references/REFERENCES.md` from the documents and locations gathered in Section D, using the manifest table format (with the per-doc section index) documented in the `reference-lookup` skill, and create an empty `docs/references/facts.md` ledger seeded with just its table header (`| Fact | Value | Source (doc, version, §/page) |`). Skip both if there are no external references.
 
 ### 5. Done
 
