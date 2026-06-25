@@ -28,11 +28,11 @@ capture() {
 
 # --- edit below ---------------------------------------------------------
 
-step "Open the app at http://localhost:3000 and sign in."
+step "Power-cycle the board and open the serial console."
 
-capture ERRORED "Click the 'Export' button. Did it throw an error? (y/n)"
+capture ERRORED "Press the user button. Did the device fault or flash an error code? (y/n)"
 
-capture ERROR_MSG "Paste the error message (or 'none'):"
+capture ERROR_MSG "Paste the serial/RTT output around the failure (or 'none'):"
 
 # --- edit above ---------------------------------------------------------
 

@@ -17,11 +17,11 @@ Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give
 
 ### Ways to construct one — try them in roughly this order
 
-1. **Failing test** at whatever seam reaches the bug — unit, integration, e2e.
-2. **Curl / HTTP script** against a running dev server.
-3. **CLI invocation** with a fixture input, diffing stdout against a known-good snapshot.
-4. **Headless browser script** (Playwright / Puppeteer) — drives the UI, asserts on DOM/console/network.
-5. **Replay a captured trace.** Save a real network request / payload / event log to disk; replay it through the code path in isolation.
+1. **Failing test** at whatever seam reaches the bug — unit, integration, on-target.
+2. **Serial / RTT command script** against the running firmware — drive UART or SEGGER RTT, assert on the response.
+3. **CLI invocation** of a host build with a fixture input, diffing stdout against a known-good snapshot.
+4. **On-target / HIL script** — drive the device over serial/RTT, or script GDB through OpenOCD / J-Link; assert on output, registers, or memory.
+5. **Replay a captured trace.** Save a real serial/CAN/sensor capture or event log to disk; replay it through the code path in isolation.
 6. **Throwaway harness.** Spin up a minimal subset of the system (one service, mocked deps) that exercises the bug code path with a single function call.
 7. **Property / fuzz loop.** If the bug is "sometimes wrong output", run 1000 random inputs and look for the failure mode.
 8. **Bisection harness.** If the bug appeared between two known states (commit, dataset, version), automate "boot at state X, check, repeat" so you can `git bisect run` it.
@@ -46,11 +46,11 @@ The goal is not a clean repro but a **higher reproduction rate**. Loop the trigg
 
 ### When you genuinely cannot build a loop
 
-Stop and say so explicitly. List what you tried. Ask the user for: (a) access to whatever environment reproduces it, (b) a captured artifact (HAR file, log dump, core dump, screen recording with timestamps), or (c) permission to add temporary production instrumentation. Do **not** proceed to hypothesise without a loop.
+Stop and say so explicitly. List what you tried. Ask the user for: (a) access to whatever hardware/environment reproduces it, (b) a captured artifact (logic-analyzer or scope capture, serial/RTT log, core dump or fault-register dump, bus trace with timestamps), or (c) permission to add temporary on-device instrumentation. Do **not** proceed to hypothesise without a loop.
 
 ### Completion criterion — a tight loop that goes red
 
-Phase 1 is done when the loop is **tight** and **red-capable**: you can name **one command** — a script path, a test invocation, a curl — that you have **already run at least once** (paste the invocation and its output), and that is:
+Phase 1 is done when the loop is **tight** and **red-capable**: you can name **one command** — a script path, a test invocation, a serial/RTT command — that you have **already run at least once** (paste the invocation and its output), and that is:
 
 - [ ] **Red-capable** — it drives the actual bug code path and asserts the **user's exact symptom**, so it can go red on this bug and green once fixed. Not "runs without erroring" — it must be able to _catch this specific bug_.
 - [ ] **Deterministic** — same verdict every run (flaky bugs: a pinned, high reproduction rate, per above).
@@ -103,7 +103,7 @@ Tool preference:
 
 **Tag every debug log** with a unique prefix, e.g. `[DEBUG-a4f2]`. Cleanup at the end becomes a single grep. Untagged logs survive; tagged logs die.
 
-**Perf branch.** For performance regressions, logs are usually wrong. Instead: establish a baseline measurement (timing harness, `performance.now()`, profiler, query plan), then bisect. Measure first, fix second.
+**Perf branch.** For performance regressions, logs are usually wrong. Instead: establish a baseline measurement (timing harness, DWT cycle counter / hardware timer, profiler, trace timeline), then bisect. Measure first, fix second.
 
 ## Phase 5 — Fix + regression test
 
