@@ -18,8 +18,8 @@ The project's sources of truth are indexed in `docs/references/REFERENCES.md` (c
 
 | Type | Document | Id / version | Local | Fallback URL |
 |---|---|---|---|---|
-| Hardware | MCU datasheet | STM32F407VG | docs/references/stm32f407-ds.pdf | https://www.st.com/.../stm32f407vg.pdf |
-| Hardware | Reference manual | RM0090 rev 19 | docs/references/rm0090.pdf | https://www.st.com/.../rm0090.pdf |
+| Hardware | <a id="stm32f407-ds"></a>MCU datasheet | STM32F407VG | docs/references/stm32f407-ds.pdf | https://www.st.com/.../stm32f407vg.pdf |
+| Hardware | <a id="rm0090"></a>Reference manual | RM0090 rev 19 | docs/references/rm0090.pdf | https://www.st.com/.../rm0090.pdf |
 | Hardware | Errata | ES0182 rev 10 | — | https://www.st.com/.../es0182.pdf |
 | Hardware | Register map (SVD) | STM32F407 | svd/STM32F407.svd | — |
 | Hardware | Board schematic | board v3 | hardware/board-v3.pdf | — |
@@ -30,18 +30,18 @@ The project's sources of truth are indexed in `docs/references/REFERENCES.md` (c
 | SDK/API | Vendor HAL docs | SDK v2.14 | docs/references/hal-v2.14/ | https://vendor.example/sdk/2.14 |
 ```
 
-Version/revision matters — errata, protocol amendments, and standard editions differ. Always resolve the entry for the **exact identifier and version** the project targets.
+Always resolve the entry for the **exact identifier and version** the project targets.
 
-Give each entry a **section/page index** for the topics this project actually touches, so lookups read a bounded region instead of scanning the whole document. Grow it as you resolve facts — either a per-doc anchor sub-list under the table, or anchors inline:
+Also give each entry a **section/page index** of the topics this project touches, so lookups read a bounded region only. Anchor each table row (`<a id="…">` in the Document cell) and link each index entry back to it, so every index line resolves to a full manifest record (local path, URL, version):
 
 ```md
 ## Section index (read these page ranges, not the whole PDF)
 
-- **RM0090 rev 19** — USART → §30; USART_BRR → §30.5.4 / pp.990–992; RCC clock tree → §6 / pp.150–230; DMA → §10.
-- **STM32F407 datasheet** — absolute maximum ratings → §6.2 / pp.65–68; pin alternate functions → Table 9.
+- **[RM0090 rev 19](#rm0090)** — USART → §30; USART_BRR → §30.5.4 / pp.990–992; RCC clock tree → §6 / pp.150–230; DMA → §10.
+- **[STM32F407 datasheet](#stm32f407-ds)** — absolute maximum ratings → §6.2 / pp.65–68; pin alternate functions → Table 9.
 ```
 
-These docs are enormous (RM0090 is ~1,750 pages). Reading one to find a single bitfield can cost tens of thousands of tokens — the index plus the lookup procedure below exist to keep that cheap.
+It's seeded at setup and grown during lookups (procedure step 3). To find an anchor the first time, cheapest first: the PDF's table of contents (first ~30 pages), then `grep` of a pre-extracted `.md`, then whatever page the Explore subagent reports.
 
 ## When to reach for this
 
@@ -54,18 +54,26 @@ Any time an externally-defined fact is load-bearing:
 
 ## Lookup procedure
 
-Resolve facts in **cheapest-source-first** order. Each step is far cheaper than the next — don't skip ahead to reading a PDF when an earlier step answers it.
+Resolve facts cheapest-source-first — don't read a PDF when an earlier step answers it.
 
-0. **Check the resolved-facts ledger first** (`docs/references/facts.md`). If the fact is already there *and* the source version matches the manifest, use it directly — a ledger hit costs tens of tokens versus thousands. (Version mismatch → treat the row as stale; re-verify below.)
-1. **Read the manifest** (`docs/references/REFERENCES.md`) for the document at the exact identifier + version, and its section index.
-2. **Prefer machine-readable in-repo sources.** For a register address/offset/bitfield/reset-value, a clock constant, or a pin/AF number, the **CMSIS device header** (e.g. `stm32f4xx.h`), the **vendor HAL headers**, and the **SVD** already encode it, live in the repo, and are grep-able for almost nothing — `grep -n USART1_BASE stm32f4xx.h` beats reading RM0090. Reach for the PDF only for what headers can't carry: field *semantics*, peripheral power-up/configuration *sequences*, *timing*, *electrical* limits, and *errata*.
-3. **Local PDF — read surgically, never whole.** Use the manifest's section index to read a **bounded page range** with the Read tool's `pages` argument (it's required for PDFs over 10 pages anyway), or `grep` a pre-extracted `.txt`. Never load a whole datasheet/manual into context. If the topic has no anchor yet, locate it once and **record the anchor in the manifest** so the next lookup is targeted.
-4. **Delegate unavoidable fat reads to a subagent.** When a fresh, large region genuinely must be read (no header carries it, no anchor exists yet), spawn an **Explore subagent** to read the pages and return only the `value + citation`. The multi-thousand-token PDF stays in the subagent's context; the main thread gets back ~100 tokens.
-5. **Manifest URL, then web.** If there's no local copy, fetch the manifest URL. If there's no manifest entry at all, search the web for the **official / authoritative** document for that exact identifier and version (prefer the vendor's or standards body's own site), then add it to the manifest.
-6. **Check for amendments/errata.** Cross-check errata sheets, protocol amendments, or standard corrigenda for the version in use — a value "correct per the base document" may be superseded.
-7. **Cite.** State the source inline: document, version/rev, section/page/clause, and the specific register, field, or rule. Citations make the fact verifiable instead of trusted.
-8. **Write back to the ledger.** Append every freshly-resolved fact (value + full citation) to `docs/references/facts.md` so the next lookup is a step-0 hit.
-9. **Never fabricate.** If a value can't be found in an in-repo source, a local doc, the manifest URL, or an authoritative web source, say so explicitly and ask the user — do not guess a register address, protocol field, timing value, or standard requirement.
+0. **Prefer machine-readable in-repo sources.** For a register address/offset/bitfield/reset-value, a clock constant, or a pin/AF number, the **CMSIS device header** (e.g. `stm32f4xx.h`), the **vendor HAL headers**, and the **SVD** already encode it, live in the repo. Next steps only for what headers can't carry: field *semantics*, peripheral power-up/configuration *sequences*, *timing*, *electrical* limits, and *errata*.
+
+1. **Check the resolved-facts ledger** (`docs/references/facts.md`). If the fact is already there *and* the source version matches the manifest, use it directly. (Version mismatch → treat the row as stale; re-verify below.)
+2. **Read the manifest** (`docs/references/REFERENCES.md`) for the document at the exact identifier + version, and its section index.
+
+3. **Local PDF — read surgically, never whole.** Use the manifest's section index to read a **bounded page range**, or `grep` a pre-extracted `.md`. If the topic has no anchor yet, locate it once and **record the anchor in the manifest**.
+
+4. **Ask for page location** Ask for page location instead of fat read. ask until resolved and **record the anchor in the manifest**.
+
+5. **Manifest URL, then web.** No local copy → fetch the manifest URL. No manifest entry → search the web for the **official / authoritative** document at that exact identifier and version (prefer the vendor's or standards body's own site), then add it to the manifest.
+
+6. **Check for amendments/errata.** A value "correct per the base document" may be superseded by an erratum, protocol amendment, or corrigendum for the version in use.
+
+7. **Cite.** State the source inline: document, version/rev, section/page/clause, and the specific register, field, or rule.
+
+8. **Write back to the ledger.** Append the resolved fact (value + citation) to `docs/references/facts.md`.
+
+9. **Never fabricate.** If a value isn't in an in-repo source, a local doc, the manifest URL, or an authoritative web source, say so and ask the user — don't guess a register address, protocol field, timing value, or standard requirement.
 
 ## Citing a fact
 
@@ -79,7 +87,7 @@ Make the source checkable, e.g.:
 
 ## Resolved-facts ledger
 
-`docs/references/facts.md` is the project's cache of facts already looked up — check it first (step 0), append to it last (step 8). It eliminates the dominant cost: re-reading the same datasheet region for a fact resolved an hour ago.
+`docs/references/facts.md` is the project's cache of facts already looked up.
 
 ```md
 # Resolved facts
@@ -99,12 +107,8 @@ Rules:
 
 ## Pre-extracting documents (optional)
 
-For a doc you hit repeatedly, convert it to text once — `pdftotext rm0090.pdf docs/references/rm0090.txt` — and check the `.txt` in. Future lookups then `grep` cheaply instead of vision-reading the PDF. Caveats: register/timing **tables** often extract messily (verify against the PDF when a table value is load-bearing), and some standards (ISO 26262, MISRA C) **license-forbid redistribution** — only extract docs you're permitted to store as text. Opt-in per document.
+For a doc you hit repeatedly, convert it to markdown once — `docling rm0090.pdf docs/references/rm0090.md` — and check the `.md` in. Future lookups then `grep` cheaply instead of vision-reading the PDF. Caveats: register/timing **tables** often extract messily (verify against the PDF when a table value is load-bearing), and some standards (ISO 26262, MISRA C) **license-forbid redistribution** — only extract docs you're permitted to store as text. Opt-in per document.
 
 ## Recording decisions
 
 A looked-up fact is not a domain term — keep it out of `CONTEXT.md`. But a **constraint that shapes the design** — "ISR latency budget is 10 µs per the peripheral's max interrupt rate", "no DMA on SPI3, see ES0182 §2.x", "no dynamic allocation in the safety path per ISO 26262" — is exactly the "constraint not visible in the code" case for an ADR. Record those via `/domain-modeling`, citing the source.
-
-## Keeping the manifest current
-
-When you resolve a document from the web that wasn't in the manifest, add it (type, identifier, version, URL, and a local path once the team checks in a controlled copy). The manifest is the team's curated set of sources of truth — grow it as you go.
