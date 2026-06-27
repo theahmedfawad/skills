@@ -63,7 +63,7 @@ Resolve facts cheapest-source-first — don't read a PDF when an earlier step an
 
 3. **Local PDF — read surgically, never whole.** Use the manifest's section index to read a **bounded page range**, or `grep` a pre-extracted `.md`. If the topic has no anchor yet, locate it once and **record the anchor in the manifest**.
 
-4. **Ask for page location** Ask for page location instead of fat read. ask until resolved and **record the anchor in the manifest**.
+4. **Ask for the page location.** Rather than a fat read, ask the user where the fact lives; keep asking until resolved, then **record the anchor in the manifest**.
 
 5. **Manifest URL, then web.** No local copy → fetch the manifest URL. No manifest entry → search the web for the **official / authoritative** document at that exact identifier and version (prefer the vendor's or standards body's own site), then add it to the manifest.
 
